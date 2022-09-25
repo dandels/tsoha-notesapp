@@ -16,3 +16,7 @@ The application contains a few barebones pages but not much functionality to
 speak of. Not all pages exist yet. User registration works, and it succesfully
 salts + hashes the password, but login is not yet implemented. You can check if
 your registration succeeded by trying to register again with the same username.
+
+The app is not currently testable on Heroku. The program is hosted at
+https://tsoha-notesapp.herokuapp.com/, but something went wrong with the Heroku
+deployment and I haven't had time to debug it.
