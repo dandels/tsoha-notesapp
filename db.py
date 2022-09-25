@@ -33,9 +33,13 @@ class Users(db.Model):
 
 class Db():
     def __init__(self, app):
+        # Load environment variable from local .env file in the project
         load_dotenv()
         db_url = getenv("DATABASE_URL")
-        # Heroku-specific hack so the database connection maybe works
+        # Heroku-specific hack so the database connection works
+        # The protocol heroku sets is "postgres://" when it should be
+        # "postgresql://" This hack rewrites it. Unfortunately this also means
+        # the file in .env needs to take this into account.
         SQLALCHEMY_DATABASE_URI = db_url.replace("://", "ql://", 1)
         app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
         db.init_app(app)
