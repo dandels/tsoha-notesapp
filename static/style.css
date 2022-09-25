@@ -1,0 +1,13 @@
+nav {
+    height: 100%;
+    float: left;
+    top: 0;
+    left: 0;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.content {
+    margin-left: 2em;
+    float: left;
+}
