@@ -10,13 +10,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 # Table(
-#     "users", metadata,
-#     Column("user_id", Integer, primary_key=True),
-#     Column("username", String),
-#     Column("pw_hash", String),
-#     )
-#
-# Table(
 #     "notes", metadata,
 #     Column("note_id", Integer, primary_key=True),
 #     Column("user_id", Integer, ForeignKey("users.user_id")),
@@ -41,7 +34,10 @@ class Users(db.Model):
 class Db():
     def __init__(self, app):
         load_dotenv()
-        app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+        db_url = getenv("DATABASE_URL")
+        # Heroku-specific hack so the database connection maybe works
+        SQLALCHEMY_DATABASE_URI = db_url.replace("://", "ql://", 1)
+        app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
         db.init_app(app)
         with app.app_context():
             db.create_all()
