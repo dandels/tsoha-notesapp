@@ -12,7 +12,7 @@
         <li><a href="/todo.html">Todo</a></li>
         <li><a href="/notes.html">Notes</a></li>
         </br>
-        {% if session.username %}
+        {% if session.user_id %}
             <li><a href="/logout.html">Logout</a></li>
         {% else %}
             <li><a href="/login.html">Login</a></li>

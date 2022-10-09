@@ -22,14 +22,15 @@ def index():
 
 @app.route("/notes.html")
 def notes():
-    if "username" not in session:
+    if "user_id" not in session:
         return redirect("login.html")
-    return render_template("notes.html")
+    notes = ["note 1", "note 2"]
+    return render_template("notes.html", notes=notes)
 
 
 @app.route("/todo.html")
 def todo():
-    if "username" not in session:
+    if "user_id" not in session:
         return redirect("login.html")
     return render_template("todo.html")
 
@@ -37,9 +38,8 @@ def todo():
 @app.route("/login.html", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        if db.try_login(username, request.form["password"]):
-            session["username"] = request.form["username"]
+        if db.try_login(request.form["username"], request.form["password"]):
+            session["user_id"] = db.user_id_for(request.form["username"])
             return redirect("/")
         else:
             # TODO show error message
@@ -68,5 +68,5 @@ def register():
 
 @app.route("/logout.html")
 def logout():
-    session.pop("username", None)
+    session.pop("user_id", None)
     return redirect("/index.html")

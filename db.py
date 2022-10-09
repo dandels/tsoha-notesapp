@@ -74,3 +74,9 @@ class Db():
                 return False
         else:
             return False
+
+    def user_id_for(self, name):
+        sql = "SELECT user_id FROM users WHERE users.username = :name LIMIT 1"
+        result = db.session.execute(sql, {"name": name})
+        messages = result.fetchone()
+        return messages[0]
