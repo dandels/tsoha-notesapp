@@ -20,11 +20,17 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/notes.html")
+@app.route("/notes.html", methods=["GET", "POST"])
 def notes():
     if "user_id" not in session:
         return redirect("login.html")
-    notes = ["note 1", "note 2"]
+
+    if request.method == "POST":
+        if db.post_note(request.form["new-note"]):
+            print("Posted note succesfully")
+        else:
+            print("Unable to post note")
+    notes = db.get_notes()
     return render_template("notes.html", notes=notes)
 
 

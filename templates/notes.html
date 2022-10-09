@@ -5,5 +5,16 @@
 {% endblock %}
 
 {% block content %}
-    <p>Placeholder</p>
+    <label for="note">New note</label>
+    </br>
+    <form method="post">
+        <textarea id="new-note" name="new-note" rows="5" cols="50" required
+            spellcheck="true" autocorrect="true"></textarea>
+        <button type="submit">Save</button>
+    </form>
+
+    {% for note in notes %}
+    <p>{{ note[0] }}</p>
+    <hr/>
+    {% endfor %}
 {% endblock %}

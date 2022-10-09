@@ -3,6 +3,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
+from flask import session
 
 db = SQLAlchemy()
 
@@ -16,14 +17,25 @@ class Users(db.Model):
 class Todo(db.Model):
     todo_id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("users.user_id"), nullable=False)
-    content = sa.Column(sa.String)
+    content = sa.Column(sa.String, nullable=False)
     due_date = sa.Column(sa.DateTime)
 
 
 class Notes(db.Model):
     note_id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("users.user_id"), nullable=False)
-    content = sa.Column(sa.String)
+    content = sa.Column(sa.String, nullable=False)
+
+
+class Tags(db.Model):
+    tag_id = sa.Column(sa.Integer, primary_key=True)
+    tag_name = sa.Column(sa.String, nullable=False)
+
+
+class NoteTag(db.Model):
+    notetag_id = sa.Column(sa.Integer, primary_key=True)
+    note_id = sa.Column(sa.Integer, sa.ForeignKey("notes.note_id"), nullable=False)
+    tag_id = sa.Column(sa.Integer, sa.ForeignKey("tags.tag_id"), nullable=False)
 
 
 class Db():
@@ -80,3 +92,16 @@ class Db():
         result = db.session.execute(sql, {"name": name})
         messages = result.fetchone()
         return messages[0]
+
+    def post_note(self, content):
+        if "user_id" not in session:
+            # TODO consider showing error to user
+            return False
+        sql = "INSERT INTO notes (content, user_id) VALUES (:content, :user_id)"
+        db.session.execute(sql, {"content": content, "user_id": session["user_id"]})
+        db.session.commit()
+        return True
+
+    def get_notes(self):
+        sql = "SELECT content FROM notes"
+        return db.session.execute(sql).fetchall()
