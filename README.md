@@ -12,9 +12,8 @@ default HTML elements. I'll also look into using JS to not require page reloads
 after every click, but it's a secondary goal.
 
 # Current state & testing
-The application contains a few barebones pages but not much functionality to
-speak of. Not all pages exist yet. User registration works, and it succesfully
-salts + hashes the password, but login is not yet implemented. You can check if
-your registration succeeded by trying to register again with the same username.
+Users can register, log in and log out. Notes can be created. Todo entries are
+not yet implemented, but they will be functionally quite close to notes.
+Tagging notes is not yet supported, although the database tables are created.
 
 The app can be tested at [https://tsoha-notesapp.herokuapp.com/](https://tsoha-notesapp.herokuapp.com/).
