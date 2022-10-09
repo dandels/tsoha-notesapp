@@ -58,13 +58,9 @@ def register():
     if request.method == "GET":
         return render_template("/register.html")
     if request.method == "POST":
-        can_register = db.try_register(
-                request.form["username"],
-                request.form["password"]
-                )
-        if can_register:
+        if db.try_register(request.form["username"], request.form["password"]):
             # TODO log in and register user
-            print("succesfully registered")
+            session["user_id"] = db.user_id_for(request.form["username"])
             return redirect("/index.html")
         else:
             flash("Username not available.", category="error")
