@@ -1,9 +1,12 @@
+from os import getenv
 from flask import Flask, flash, session, redirect, render_template, request
 from db import Db
+from dotenv import load_dotenv
 
 app = Flask(__name__)
-# temporary value, this isn't used yet
-app.secret_key = "hunter2"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+load_dotenv()
+app.secret_key = getenv("APP_SECRET_KEY")
 db = Db(app)
 
 
@@ -17,11 +20,30 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/notes.html")
+def notes():
+    if "username" not in session:
+        return redirect("login.html")
+    return render_template("notes.html")
+
+
+@app.route("/todo.html")
+def todo():
+    if "username" not in session:
+        return redirect("login.html")
+    return render_template("todo.html")
+
+
 @app.route("/login.html", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        session["username"] = request.form["username"]
-        return redirect("/")
+        username = request.form["username"]
+        if db.try_login(username, request.form["password"]):
+            session["username"] = request.form["username"]
+            return redirect("/")
+        else:
+            # TODO show error message
+            print("Invalid login")
     return render_template("login.html")
 
 
@@ -44,16 +66,7 @@ def register():
     return render_template("/index.html")
 
 
-@app.route("/logout")
+@app.route("/logout.html")
 def logout():
     session.pop("username", None)
     return redirect("/index.html")
-
-
-# @app.route("/send", methods=["POST"])
-# def send():
-#     content = request.form["content"]
-#     sql = "INSERT INTO messages (content) VALUES (:content)"
-#     db.session.execute(sql, {"content": content})
-#     db.session.commit()
-#     return redirect("/")
