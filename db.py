@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import session
 
 db = SQLAlchemy()
+ph = PasswordHasher()
 
 
 class Users(db.Model):
@@ -62,7 +63,7 @@ class Db():
         if not messages:
             # The argon2 hasher stores the salt internally and it doesn't need
             # separate storing in the database.
-            pw_hash = PasswordHasher.hash(password)
+            pw_hash = ph.hash(password)
 
             sql = "INSERT INTO users (username, pw_hash) \
                     VALUES (:name, :pw_hash)"
@@ -79,7 +80,6 @@ class Db():
         pw_hash = result.fetchone()
         if pw_hash:
             try:
-                ph = PasswordHasher()
                 ph.verify(pw_hash[0], password)
                 return True
             except VerifyMismatchError:
@@ -103,5 +103,5 @@ class Db():
         return True
 
     def get_notes(self):
-        sql = "SELECT content FROM notes"
-        return db.session.execute(sql).fetchall()
+        sql = "SELECT content FROM notes WHERE (user_id) = :user_id"
+        return db.session.execute(sql, {"user_id": session["user_id"]}).fetchall()
