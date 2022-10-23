@@ -9,12 +9,21 @@
     </br>
     <form method="post">
         <textarea id="new-note" name="new-note" rows="5" cols="50" required
-            spellcheck="true" autocorrect="true"></textarea>
+            spellcheck="true" autocorrect="true" maxlength=10000></textarea>
+        <br/>
         <button type="submit">Save</button>
+        <br/><br/>
+        <hr/>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
 
     {% for note in notes %}
-    <p>{{ note[0] }}</p>
+    <p>{{ note[0] }}
+    <form method="post">
+        <button type="submit" name="delete-note">Delete</button>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="note-id" value="{{ note[1] }}">
+    </form>
     <hr/>
     {% endfor %}
 {% endblock %}

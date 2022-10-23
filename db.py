@@ -3,34 +3,38 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
-from flask import session
+from flask import session, flash
 
 db = SQLAlchemy()
 ph = PasswordHasher()
 
+# TODO sanity checking for the lengths when sending form
+#   - max lengths are 30 for shor fields and 10k for long fields
+# TODO create schema.sql (see https://hy-tsoha.github.io/materiaali/osa-3/)
+
 
 class Users(db.Model):
     user_id = sa.Column(sa.Integer, primary_key=True)
-    username = sa.Column(sa.String, unique=True, nullable=False)
+    username = sa.Column(sa.String(30), unique=True, nullable=False)
     pw_hash = sa.Column(sa.String, unique=True, nullable=False)
 
 
 class Todo(db.Model):
     todo_id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("users.user_id"), nullable=False)
-    content = sa.Column(sa.String, nullable=False)
-    due_date = sa.Column(sa.DateTime)
+    content = sa.Column(sa.String(10000), nullable=False)
+    due_date = sa.Column(sa.Date)
 
 
 class Notes(db.Model):
     note_id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("users.user_id"), nullable=False)
-    content = sa.Column(sa.String, nullable=False)
+    content = sa.Column(sa.String(10000), nullable=False)
 
 
 class Tags(db.Model):
     tag_id = sa.Column(sa.Integer, primary_key=True)
-    tag_name = sa.Column(sa.String, nullable=False)
+    tag_name = sa.Column(sa.String(30), nullable=False)
 
 
 class NoteTag(db.Model):
@@ -55,9 +59,19 @@ class Db():
         with app.app_context():
             db.create_all()
 
-    def try_register(self, name, password):
-        sql = "SELECT username FROM users WHERE users.username = :name LIMIT 1"
-        result = db.session.execute(sql, {"name": name})
+    def try_register(self, username, password):
+        if len(username) == 0 or len(password) == 0:
+            flash("Username or password must not be empty.", category="error")
+            return False
+        if len(password) > 1000:
+            flash("Password must not be longer than 1000 characters.", category="error");
+            return False
+        if len(username) > 30:
+            flash("Username must not be longer than 30 characters.", category="error");
+            return False
+
+        sql = "SELECT username FROM users WHERE LOWER(users.username) = LOWER(:username) LIMIT 1"
+        result = db.session.execute(sql, {"username": username})
         messages = result.fetchone()
         # User doesn't exist, create account
         if not messages:
@@ -66,17 +80,17 @@ class Db():
             pw_hash = ph.hash(password)
 
             sql = "INSERT INTO users (username, pw_hash) \
-                    VALUES (:name, :pw_hash)"
-            db.session.execute(sql, {"name": name, "pw_hash": pw_hash})
+                    VALUES (:username, :pw_hash)"
+            db.session.execute(sql, {"username": username, "pw_hash": pw_hash})
             db.session.commit()
-            print(name, " ", pw_hash)
             return True
         # User exists already
+        flash("Username is not available.", category="error");
         return False
 
-    def try_login(self, name, password):
-        sql = "SELECT pw_hash FROM users WHERE users.username = :name LIMIT 1"
-        result = db.session.execute(sql, {"name": name})
+    def try_login(self, username, password):
+        sql = "SELECT pw_hash FROM users WHERE users.username = :username LIMIT 1"
+        result = db.session.execute(sql, {"username": username})
         pw_hash = result.fetchone()
         if pw_hash:
             try:
@@ -87,21 +101,18 @@ class Db():
         else:
             return False
 
-    def user_id_for(self, name):
-        sql = "SELECT user_id FROM users WHERE users.username = :name LIMIT 1"
-        result = db.session.execute(sql, {"name": name})
+    def user_id_for(self, username):
+        sql = "SELECT user_id FROM users WHERE users.username = :username LIMIT 1"
+        result = db.session.execute(sql, {"username": username})
         messages = result.fetchone()
         return messages[0]
 
     def post_note(self, content):
-        if "user_id" not in session:
-            # TODO consider showing error to user
-            return False
         sql = "INSERT INTO notes (content, user_id) VALUES (:content, :user_id)"
         db.session.execute(sql, {"content": content, "user_id": session["user_id"]})
         db.session.commit()
         return True
 
     def get_notes(self):
-        sql = "SELECT content FROM notes WHERE (user_id) = :user_id"
+        sql = "SELECT content, note_id FROM notes WHERE (user_id) = :user_id"
         return db.session.execute(sql, {"user_id": session["user_id"]}).fetchall()
