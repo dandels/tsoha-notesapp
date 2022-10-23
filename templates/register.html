@@ -15,5 +15,6 @@
     <input type="password" name="password" id="password" min=1 max=1000 required/>
     </br>
     <input type="submit" value="Submit"/>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% endblock %}
