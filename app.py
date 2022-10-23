@@ -86,11 +86,9 @@ def register():
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         elif db.try_register(request.form["username"], request.form["password"]):
-            flash("Username not available.", category="error")
             session["user_id"] = db.user_id_for(request.form["username"])
             return redirect("/index.html")
         else:
-            flash("Username not available.", category="error")
             return render_template("/register.html")
 
 
