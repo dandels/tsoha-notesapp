@@ -5,5 +5,26 @@
 {% endblock %}
 
 {% block content %}
-    <p>Placeholder</p>
+    <label for="todo">New TODO item</label>
+    </br>
+    <form method="post">
+        <textarea id="new-todo" name="new-todo" rows="5" cols="50" required
+            spellcheck="true" autocorrect="true" maxlength=10000></textarea>
+        <br/>
+        <input type="date" name="todo-date" required=true>
+        <button type="submit">Save</button>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+
+    </br>
+
+    {% for todo in todos %}
+    <form method="post">
+        <div id="todo-header"><h2>{{todo[2]}}</h2><div id="del-button-div"><button type="submit" name="delete-todo">Delete</button></div></div>
+        <p>{{ todo[0] }}
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="todo-id" value="{{ todo[1] }}">
+    </form>
+    <hr/>
+    {% endfor %}
 {% endblock %}

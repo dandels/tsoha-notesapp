@@ -111,8 +111,26 @@ class Db():
         sql = "INSERT INTO notes (content, user_id) VALUES (:content, :user_id)"
         db.session.execute(sql, {"content": content, "user_id": session["user_id"]})
         db.session.commit()
-        return True
+
+    def delete_note(self, note_id):
+        sql = "DELETE FROM notes WHERE user_id = (:user_id) AND note_id = (:note_id)"
+        db.session.execute(sql, {"user_id": session["user_id"], "note_id": note_id})
+        db.session.commit()
 
     def get_notes(self):
         sql = "SELECT content, note_id FROM notes WHERE (user_id) = :user_id"
+        return db.session.execute(sql, {"user_id": session["user_id"]}).fetchall()
+
+    def post_todo(self, content, due_date):
+        sql = "INSERT INTO todo (content, user_id, due_date) VALUES (:content, :user_id, :due_date)"
+        db.session.execute(sql, {"content": content, "due_date": due_date, "user_id": session["user_id"]})
+        db.session.commit()
+
+    def delete_todo(self, todo_id):
+        sql = "DELETE FROM todo WHERE user_id = (:user_id) AND todo_id = (:todo_id)"
+        db.session.execute(sql, {"user_id": session["user_id"], "todo_id": todo_id})
+        db.session.commit()
+
+    def get_todos(self):
+        sql = "SELECT content, todo_id, due_date FROM todo WHERE (user_id) = :user_id ORDER BY due_date"
         return db.session.execute(sql, {"user_id": session["user_id"]}).fetchall()

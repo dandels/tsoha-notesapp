@@ -1,8 +1,5 @@
 nav {
-    height: 100%;
     float: left;
-    top: 0;
-    left: 0;
     margin-left: 1em;
     margin-right: 1em;
 }
@@ -10,4 +7,20 @@ nav {
 .content {
     margin-left: 2em;
     float: left;
+    width: 80%;
+}
+
+#del-button-div {
+    float: left;
+    margin-left: 0.5em;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+h2 {
+    margin: 0px;
+}
+
+#todo-header {
+    display: flex;
 }

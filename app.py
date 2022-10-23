@@ -41,11 +41,25 @@ def notes():
     return render_template("notes.html", notes=notes)
 
 
-@app.route("/todo.html")
+@app.route("/todo.html", methods=["GET", "POST"])
 def todo():
     if "user_id" not in session:
         return redirect("login.html")
-    return render_template("todo.html")
+
+    if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        if "new-todo" in request.form:
+            db.post_todo(request.form["new-todo"], request.form["todo-date"])
+        elif "delete-todo" in request.form:
+            db.delete_todo(request.form["todo-id"])
+        else:
+            abort(400)
+
+    session["csrf_token"] = secrets.token_hex(16)
+    todos = db.get_todos()
+
+    return render_template("todo.html", todos=todos)
 
 
 @app.route("/login.html", methods=["GET", "POST"])
@@ -80,3 +94,6 @@ def register():
 def logout():
     session.pop("user_id", None)
     return redirect("/index.html")
+
+def check_registration(username, password):
+    False
