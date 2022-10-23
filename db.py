@@ -3,7 +3,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
-from flask import session, flash
+from flask import session, flash, abort
 
 db = SQLAlchemy()
 ph = PasswordHasher()
@@ -34,7 +34,7 @@ class Notes(db.Model):
 
 class Tags(db.Model):
     tag_id = sa.Column(sa.Integer, primary_key=True)
-    tag_name = sa.Column(sa.String(30), nullable=False)
+    tag_name = sa.Column(sa.String(30), nullable=False, unique=True)
 
 
 class NoteTag(db.Model):
@@ -118,8 +118,47 @@ class Db():
         db.session.commit()
 
     def get_notes(self):
-        sql = "SELECT content, note_id FROM notes WHERE (user_id) = :user_id"
-        return db.session.execute(sql, {"user_id": session["user_id"]}).fetchall()
+        sql = "SELECT content, notes.note_id, array_agg(tags.tag_id) as tag_indexes, array_agg(tags.tag_name) as tag_names\
+                FROM notes\
+                LEFT JOIN note_tag ON (notes.note_id = note_tag.note_id)\
+                LEFT JOIN tags ON (note_tag.tag_id = tags.tag_id)\
+                WHERE notes.user_id=:user_id\
+                GROUP BY (notes.note_id);"
+        result = db.session.execute(sql, {"user_id": session["user_id"]})
+        messages = result.fetchall()
+        print(messages)
+        return messages
+
+    # TODO duplicate tags can be added to the same note
+    def add_tag(self, note_id, tag_name):
+        sql = "SELECT tag_id from tags WHERE (tag_name) = :tag_name"
+        result = db.session.execute(sql, {"tag_name": tag_name})
+        messages = result.fetchone()
+
+        tag_id = -1
+
+        if not messages:
+            sql = "INSERT INTO tags (tag_name) VALUES (:tag_name) RETURNING tag_id"
+            result = db.session.execute(sql, {"tag_name": tag_name})
+            tag_id = result.fetchone()[0]
+        else:
+            tag_id = messages[0]
+
+        sql = "INSERT INTO note_tag (note_id, tag_id) VALUES (:note_id, :tag_id)"
+        db.session.execute(sql, {"note_id": note_id, "tag_id": tag_id})
+        db.session.commit()
+
+    def delete_tag(self, note_id, tag_id):
+        if note_id == 0 or tag_id == 0:
+            abort(500)
+        sql = "DELETE FROM note_tag WHERE note_id = (:note_id) AND tag_id = (:tag_id)"
+        db.session.execute(sql, {"note_id": note_id, "tag_id": tag_id})
+        db.session.commit()
+
+    def get_tags_for_note(self, note_id):
+        sql = "SELECT (note_tag.tag_id, tags.tag_name) FROM note_tag \
+                INNER JOIN tags ON (note_tag.tag_id = tags.tag_id) WHERE (note_tag.note_id = :note_id)"
+        return db.session.execute(sql, {"note_id": note_id}).fetchall()
 
     def post_task(self, content, due_date):
         sql = "INSERT INTO tasks (content, user_id, due_date) VALUES (:content, :user_id, :due_date)"

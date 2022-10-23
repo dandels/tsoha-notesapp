@@ -33,6 +33,10 @@ def notes():
             db.post_note(request.form["new-note"])
         elif "delete-note" in request.form:
             db.delete_note(request.form["note-id"])
+        elif "add-tag" in request.form:
+            db.add_tag(request.form["note-id"], request.form["tag-name"])
+        elif "delete-tag" in request.form:
+            db.delete_tag(request.form["note-id"], request.form["tag-id"])
         else:
             abort(400)
 

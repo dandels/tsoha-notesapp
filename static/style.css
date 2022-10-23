@@ -1,28 +1,31 @@
 nav {
     float: left;
-    margin-left: 1em;
-    margin-right: 1em;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+
+textarea {
+    max-width: 100%;
 }
 
 .content {
-    margin-left: 2em;
     float: left;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
     width: 80%;
-}
-
-#del-button-div {
-    float: left;
-    margin-left: 0.5em;
-    margin-top: auto;
-    margin-bottom: auto;
 }
 
 h2 {
     margin: 0px;
-}
-
-#task-header {
-    display: flex;
 }
 
 .save-button {
@@ -30,7 +33,50 @@ h2 {
     border-color: black;
 }
 
-.delete-button {
+.note-parent-container {
+    display: inline-block;
+    width: 100%;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+
+    margin-top: 2px;
+}
+
+.note-container {
+    margin-left: 0.5em;
+    word-wrap: break-word;
+}
+
+.tag-container {
+    margin-left: 0.5em;
+    word-wrap: break-word;
+}
+
+
+.add-tag-container {
+    float: left;
+    margin-left: 0.5em;
+    word-wrap: break-word;
+}
+
+.button-remove-tag {
+    float: left;
+    font-weight: bold;
+
+    margin-left: 0.1em;
+    padding-right: 0.3em;
+    padding-left: 0.3em;
+
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.button-remove-note {
+    float: right;
+
     background-color: #ff7070;
     border-color: black;
 }

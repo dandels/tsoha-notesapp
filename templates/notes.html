@@ -10,20 +10,43 @@
     <form method="post">
         <textarea id="new-note" name="new-note" rows="5" cols="50" required
             spellcheck="true" autocorrect="true" maxlength=10000></textarea>
-        <br/>
-        <button type="submit" class="save-button">Save</button>
-        <br/><br/>
-        <hr/>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <div>
+            <button type="submit" class="save-button">Save</button>
+        </div>
     </form>
 
     {% for note in notes %}
-    <p>{{ note[0] }}
-    <form method="post">
-        <button type="submit" name="delete-note" class="delete-button">Delete</button>
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="hidden" name="note-id" value="{{ note[1] }}">
+        <div class="note-parent-container">
+            <div class="note-container">
+                <p>{{ note[0] }}</p>
+            </div>
+            <div class="tag-container">
+                {% for tag_name in note[3] %}
+                    <form method="post">
+                        <button type="submit" name="delete-tag" class="button-remove-tag">{{ tag_name }}</button>
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <input type="hidden" name="tag-id" value="{{ note[2][loop.index0] }}">
+                        <input type="hidden" name="note-id" value="{{ note[1] }}">
+                    </form>
+                {% endfor %}
+            </div>
+            <div class="add-tag-container">
+                <form method="post">
+                    <input name="tag-name" required max=30 min=1/>
+                    <button type="submit" name="add-tag" class="button-add-tag">+</button>
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <input type="hidden" name="note-id" value="{{ note[1] }}">
+                </form>
+            </div>
+            <div class="delete-container">
+                <form method="post">
+                    <button type="submit" name="delete-note" class="button-remove-note">Delete</button>
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <input type="hidden" name="note-id" value="{{ note[1] }}">
+                </form>
+            </div>
+        </div>
     </form>
-    <hr/>
     {% endfor %}
 {% endblock %}
