@@ -16,12 +16,14 @@
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
 
-    </br>
 
     {% for task in tasks %}
     <form method="post">
-        <div id="task-header"><h2>{{task[2]}}</h2><div id="del-button-div"><button type="submit" name="delete-task" class="delete-button">Delete</button></div></div>
-        <p>{{ task[0] }}
+        <div id="task-header"><h2>{{task[2]}}</h2></div>
+        <div class="button-del-task">
+            <button type="submit" name="delete-task" class="button-delete-task">Delete</button>
+        </div>
+        <p><pre>{{ task[0] }}</pre></p>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <input type="hidden" name="task-id" value="{{ task[1] }}">
     </form>

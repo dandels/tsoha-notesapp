@@ -19,7 +19,7 @@
     {% for note in notes %}
         <div class="note-parent-container">
             <div class="note-container">
-                <p>{{ note[0] }}</p>
+                <p><pre>{{ note[0] }}</pre></p>
             </div>
             <div class="tag-container">
                 {% for tag_name in note[3] %}
@@ -41,7 +41,7 @@
             </div>
             <div class="delete-container">
                 <form method="post">
-                    <button type="submit" name="delete-note" class="button-remove-note">Delete</button>
+                    <button type="submit" name="delete-note" class="button-delete-note">Delete</button>
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <input type="hidden" name="note-id" value="{{ note[1] }}">
                 </form>
