@@ -23,17 +23,19 @@
             </div>
             <div class="tag-container">
                 {% for tag_name in note[3] %}
-                    <form method="post">
-                        <button type="submit" name="delete-tag" class="button-remove-tag">{{ tag_name }}</button>
-                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        <input type="hidden" name="tag-id" value="{{ note[2][loop.index0] }}">
-                        <input type="hidden" name="note-id" value="{{ note[1] }}">
-                    </form>
+                    {% if tag_name %}
+                        <form method="post">
+                            <button type="submit" name="delete-tag" class="button-remove-tag">{{ tag_name }}</button>
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                            <input type="hidden" name="tag-id" value="{{ note[2][loop.index0] }}">
+                            <input type="hidden" name="note-id" value="{{ note[1] }}">
+                        </form>
+                    {% endif %}
                 {% endfor %}
             </div>
             <div class="add-tag-container">
                 <form method="post">
-                    <input name="tag-name" required max=30 min=1/>
+                    <input name="tag-name" required max=30 min=1 size=8 placeholder="add tag"/>
                     <button type="submit" name="add-tag" class="button-add-tag">+</button>
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <input type="hidden" name="note-id" value="{{ note[1] }}">
