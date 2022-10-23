@@ -21,6 +21,16 @@ h2 {
     margin: 0px;
 }
 
-#todo-header {
+#task-header {
     display: flex;
+}
+
+.save-button {
+    background-color: #70ef70;
+    border-color: black;
+}
+
+.delete-button {
+    background-color: #ff7070;
+    border-color: black;
 }

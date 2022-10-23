@@ -41,25 +41,25 @@ def notes():
     return render_template("notes.html", notes=notes)
 
 
-@app.route("/todo.html", methods=["GET", "POST"])
-def todo():
+@app.route("/tasks.html", methods=["GET", "POST"])
+def tasks():
     if "user_id" not in session:
         return redirect("login.html")
 
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        if "new-todo" in request.form:
-            db.post_todo(request.form["new-todo"], request.form["todo-date"])
-        elif "delete-todo" in request.form:
-            db.delete_todo(request.form["todo-id"])
+        if "new-task" in request.form:
+            db.post_task(request.form["new-task"], request.form["task-date"])
+        elif "delete-task" in request.form:
+            db.delete_task(request.form["task-id"])
         else:
             abort(400)
 
     session["csrf_token"] = secrets.token_hex(16)
-    todos = db.get_todos()
+    tasks = db.get_tasks()
 
-    return render_template("todo.html", todos=todos)
+    return render_template("tasks.html", tasks=tasks)
 
 
 @app.route("/login.html", methods=["GET", "POST"])

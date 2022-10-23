@@ -3,13 +3,13 @@
     <head>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
-        <title>{% block title %}{% endblock %}Tsoha notes & todo app</title>
+        <title>{% block title %}{% endblock %}Tsoha notes & tasks app</title>
     </head>
 <nav>
-    <h1>Appmazing</h1>
+    <h1>Notes & Tasks</h1>
     <ul id=menu>
         <li><a href="/index.html">Home</a></li>
-        <li><a href="/todo.html">Todo</a></li>
+        <li><a href="/tasks.html">Tasks</a></li>
         <li><a href="/notes.html">Notes</a></li>
         </br>
         {% if session.user_id %}

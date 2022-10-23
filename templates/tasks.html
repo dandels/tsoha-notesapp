@@ -1,28 +1,29 @@
 {% extends "base.html" %}
 
 {% block header %}
-    <h1>{% block title %}Notes{% endblock %}</h1>
+    <h1>{% block title %}Tasks{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-    <label for="note">New note</label>
+    <label for="task">New task</label>
     </br>
     <form method="post">
-        <textarea id="new-note" name="new-note" rows="5" cols="50" required
+        <textarea id="new-task" name="new-task" rows="5" cols="50" required
             spellcheck="true" autocorrect="true" maxlength=10000></textarea>
         <br/>
+        <input type="date" name="task-date" required=true>
         <button type="submit" class="save-button">Save</button>
-        <br/><br/>
-        <hr/>
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
 
-    {% for note in notes %}
-    <p>{{ note[0] }}
+    </br>
+
+    {% for task in tasks %}
     <form method="post">
-        <button type="submit" name="delete-note" class="delete-button">Delete</button>
+        <div id="task-header"><h2>{{task[2]}}</h2><div id="del-button-div"><button type="submit" name="delete-task" class="delete-button">Delete</button></div></div>
+        <p>{{ task[0] }}
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="hidden" name="note-id" value="{{ note[1] }}">
+        <input type="hidden" name="task-id" value="{{ task[1] }}">
     </form>
     <hr/>
     {% endfor %}

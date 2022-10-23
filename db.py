@@ -19,11 +19,11 @@ class Users(db.Model):
     pw_hash = sa.Column(sa.String, unique=True, nullable=False)
 
 
-class Todo(db.Model):
-    todo_id = sa.Column(sa.Integer, primary_key=True)
+class Tasks(db.Model):
+    task_id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("users.user_id"), nullable=False)
     content = sa.Column(sa.String(10000), nullable=False)
-    due_date = sa.Column(sa.Date)
+    due_date = sa.Column(sa.Date, nullable=False)
 
 
 class Notes(db.Model):
@@ -121,16 +121,16 @@ class Db():
         sql = "SELECT content, note_id FROM notes WHERE (user_id) = :user_id"
         return db.session.execute(sql, {"user_id": session["user_id"]}).fetchall()
 
-    def post_todo(self, content, due_date):
-        sql = "INSERT INTO todo (content, user_id, due_date) VALUES (:content, :user_id, :due_date)"
+    def post_task(self, content, due_date):
+        sql = "INSERT INTO tasks (content, user_id, due_date) VALUES (:content, :user_id, :due_date)"
         db.session.execute(sql, {"content": content, "due_date": due_date, "user_id": session["user_id"]})
         db.session.commit()
 
-    def delete_todo(self, todo_id):
-        sql = "DELETE FROM todo WHERE user_id = (:user_id) AND todo_id = (:todo_id)"
-        db.session.execute(sql, {"user_id": session["user_id"], "todo_id": todo_id})
+    def delete_task(self, task_id):
+        sql = "DELETE FROM tasks WHERE user_id = (:user_id) AND task_id = (:task_id)"
+        db.session.execute(sql, {"user_id": session["user_id"], "task_id": task_id})
         db.session.commit()
 
-    def get_todos(self):
-        sql = "SELECT content, todo_id, due_date FROM todo WHERE (user_id) = :user_id ORDER BY due_date"
+    def get_tasks(self):
+        sql = "SELECT content, task_id, due_date FROM tasks WHERE (user_id) = :user_id ORDER BY due_date"
         return db.session.execute(sql, {"user_id": session["user_id"]}).fetchall()
